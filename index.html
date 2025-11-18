@@ -150,7 +150,8 @@
                     mainContent.innerHTML = '<div class="text-center py-20"><p class="text-xl text-gray-500">正在載入內容...</p></div>';
 
                     // 使用 fetch 抓取目標 HTML 檔案
-                    const response = await fetch(url);
+                    // **修改處**：加入 { cache: 'no-store' } 選項，強制瀏覽器不使用快取，直接向伺服器請求最新檔案
+                    const response = await fetch(url, { cache: 'no-store' });
 
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);

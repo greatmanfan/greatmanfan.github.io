@@ -138,17 +138,14 @@
 
             // 定義載入頁面的函數
             async function loadPageContent(url) {
-                alert(url);
                 // 如果是首頁，恢復原始內容
                 if (url === 'index.html' || url === './index.html' || url.endsWith('index.html')) {
-                    alert('111');
                     mainContent.innerHTML = homeContent;
                     window.scrollTo(0, 0);
                     return;
                 }
 
                 try {
-                    alert('222');
                     // 顯示載入中狀態
                     mainContent.innerHTML = '<div class="text-center py-20"><p class="text-xl text-gray-500">正在載入內容...</p></div>';
 

@@ -1,575 +1,368 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>范揚松天地 - 網站首頁</title>
-    <!-- 載入 Tailwind CSS CDN -->
+    <title>范揚松天地 - 首頁</title>
+    <!-- 載入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 設置基本字體和背景 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* 選單項目的基本樣式 */
+        .menu-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            white-space: nowrap; 
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .menu-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .dropdown-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            white-space: nowrap;
+            background-color: #1e3a8a;
+            color: white;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .dropdown-link:hover {
+            background-color: #1e40af;
+        }
+        /* 用於在小螢幕上隱藏導航欄 */
+        #nav-menu {
+            transition: max-height 0.3s ease-out;
+            overflow: hidden; 
+            max-height: 0;
+        }
+        @media (min-width: 768px) {
+            #nav-menu {
+                max-height: none !important; 
+                overflow: visible !important; 
+            }
+        }
+    </style>
     <script>
-        // 修正: 確保在配置 tailwind.config 之前，Tailwind CDN 已載入
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    colors: {
+                        'primary-blue': '#1d4ed8',
                     },
                 }
             }
         }
-    </script>
-    <style>
-        /* 設置全域字體為 Inter，並為中文添加 fallback */
-        body {
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
-            background-color: #f7f7f7;
-        }
-        /* 隱藏預設的 dropdown 內容 */
-        .dropdown-menu {
-            display: none;
-        }
-        /* 定義導覽列的藍色 */
-        .navbar-bg {
-            background-color: #3b82f6; /* Blue-500 */
-        }
-        /* 確保內容區域有足夠的 padding 避免被固定導覽列遮擋 */
-        #content-area {
-            padding-top: 64px; /* Adjust based on navbar height */
-            min-height: calc(100vh - 120px); /* Adjust min-height for footer */
-        }
-        /* 確保所有連結都有基礎的 hover 效果 */
-        a {
-            transition: color 0.15s;
-        }
-        a:hover {
-            color: #2563eb;
-        }
-        /* 內容標題樣式 */
-        .content-title {
-            color: #1d4ed8; /* Blue-700 */
-            border-bottom: 3px solid #60a5fa; /* Blue-400 */
-            padding-bottom: 4px;
-            margin-bottom: 2rem;
-        }
-    </style>
-</head>
-<body class="flex flex-col min-h-screen">
 
-    <!-- Header / 導覽列 -->
-    <header class="fixed top-0 left-0 right-0 z-50 shadow-lg navbar-bg">
-        <nav id="navbar-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Navigation will be built by JS -->
-        </nav>
-    </header>
-
-    <!-- Main Content / 內容區域 -->
-    <main id="content-area" class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Page content will be injected here -->
-    </main>
-
-    <!-- Footer / 頁尾 -->
-    <footer class="bg-gray-800 text-white p-6 mt-8">
-        <div class="max-w-7xl mx-auto text-center text-sm space-y-2">
-            <h3 class="text-lg font-bold">聯絡方式</h3>
-            <p>地址：台北市文山區汀州路四段85巷3號B1 (師大分部旁)</p>
-            <p>服務專線：02-2935-3999</p>
-            <p>E-mail：<a href="mailto:greatmanfan@gmail.com" class="text-blue-300 hover:text-blue-500">greatmanfan@gmail.com</a></p>
-            <p class="pt-4 text-xs text-gray-400">© 2024 范揚松天地. All Rights Reserved.</p>
-        </div>
-    </footer>
-
-    <!-- JavaScript for Routing and Content -->
-    <script>
-        // 定義所有主頁面的導覽連結
-        const NAV_LINKS = [
-            { id: 0, title: "首頁", path: "#home", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' },
-            { id: 1, title: "范揚松學經歷、證件", path: "#page1", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M12 19V5"/><path d="M5 12H19"/></svg>' },
-            { id: 2, title: "范范詩友詩書創作", path: "#page2", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' },
-            { id: 3, title: "藏頭詩創作及評論", path: "#page3", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/><path d="M10 13a2 2 0 0 0 2 2h1"/><path d="M10 17a2 2 0 0 0 2 2h1"/></svg>', hasDropdown: true },
-            { id: 4, title: "一般文章、序文", path: "#page4", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M8 2h8"/><path d="M9 18h6"/><path d="M9 14h6"/></svg>' },
-            { id: 5, title: "瑞士歐大辦學文集", path: "#page5", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14"/><path d="M7 21l-4-4"/><path d="M21 17l-4 4"/><circle cx="12" cy="12" r="4"/></svg>' },
-            { id: 6, title: "陶朱公書稿彙編", path: "#page6", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2" ry="2"/><path d="M12 7V17"/><path d="M17 12H7"/></svg>' },
-            { id: 7, title: "AI生成協作文章", path: "#page7", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.8 4.7l-4.2 4.2"/><path d="M15.5 12.5l-2.4 2.4"/><path d="M17 17l4-4"/><path d="M19 12a7 7 0 1 0-7 7"/><path d="M12 19a7 7 0 1 0 7-7"/><path d="M8 8l4 4"/><path d="M4 13a7 7 0 1 0 7-7"/></svg>', hasDropdown: true },
-            { id: 8, title: "授課簡報資料檔", path: "#page8", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"/><line x1="7" y1="15" x2="17" y2="15"/><line x1="7" y1="11" x2="17" y2="11"/><line x1="7" y1="7" x2="17" y2="7"/></svg>' },
-            { id: 9, title: "視頻影片彙編", path: "#page9", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/><polygon points="10 8 16 12 10 16 10 8"/></svg>' },
-            { id: 10, title: "照片圖檔資料庫", path: "#page10", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8v.01"/><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M4 15.5l6-6c.9-.9 2.1-1.4 3.5-1.4h.9c.9 0 1.7.5 2 1.3l4 8.7"/></svg>' },
-            { id: 11, title: "客家政策及圖文檔", path: "#page11", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2z"/><path d="M9 13H15"/><path d="M9 17H15"/><circle cx="12" cy="7" r="1"/></svg>' },
-            { id: 12, title: "關係企業協會圖文", path: "#page12", icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5L12 2z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>' }
-        ];
-
-        // 藏頭詩 (Page 3) 的下拉選單結構
-        const POEM_DROPDOWN = [2023, 2024, 2025].map(year => ({
-            title: `${year}年藏頭詩`,
-            path: `#page3/${year}`,
-            months: Array.from({ length: 12 }, (_, i) => ({
-                title: `${year}年${(i + 1).toString().padStart(2, '0')}月藏頭詩`,
-                path: `#page3/${year}/${(i + 1).toString().padStart(2, '0')}`
-            }))
-        }));
-
-        // AI 文章 (Page 7) 的下拉選單結構
-        const AI_DROPDOWN = [
-            { title: "201~300問", path: "#page7/201-300" },
-            { title: "101~200問", path: "#page7/101-200" },
-            { title: "1~100問", path: "#page7/1-100" }
-        ];
-
-        const contentArea = document.getElementById('content-area');
-        const navbarContainer = document.getElementById('navbar-container');
-        const defaultIcon = 'https://placehold.co/100x100/3b82f6/ffffff?text=Icon';
-
-        /**
-         * 創建 SVG 圖標
-         * @param {string} dPath - SVG path data
-         */
-        function createIcon(dPath) {
-            return `<svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-blue-500 group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${dPath}</svg>`;
-        }
-
-        /**
-         * 渲染導覽列
-         */
-        function renderNavbar() {
-            let navHTML = `<div class="flex items-center justify-between h-16">
-                <a href="#home" class="flex-shrink-0 text-white text-xl font-bold rounded-lg p-1.5 hover:bg-blue-600 transition">
-                    <span class="inline-block bg-white text-blue-500 rounded-full w-6 h-6 text-center text-sm font-black mr-2">范</span>
-                    范揚松天地
-                </a>
-                <div class="hidden lg:block">
-                    <div class="ml-10 flex items-baseline space-x-4">`;
-
-            NAV_LINKS.forEach(link => {
-                if (link.hasDropdown) {
-                    // 帶有下拉選單的項目
-                    navHTML += `
-                        <div class="relative group">
-                            <a href="${link.path}" class="text-white hover:bg-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center transition">
-                                ${link.id}. ${link.title}
-                                <svg class="ml-1 w-4 h-4 transition-transform group-hover:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                            </a>
-                            <div class="dropdown-menu absolute right-0 mt-2 w-60 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 transition-opacity opacity-0 group-hover:opacity-100 group-hover:block hover:block">
-                                <div class="py-1">`;
-                    
-                    if (link.id === 3) { // 藏頭詩
-                        POEM_DROPDOWN.forEach(yearItem => {
-                            // 修正: 將 group/year 改為 group-year，避免選擇器錯誤
-                            navHTML += `<div class="relative group-year">
-                                <a href="${yearItem.path}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center">
-                                    ${yearItem.title}
-                                    <svg class="ml-2 w-4 h-4 transform group-hover-year:rotate-90 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                </a>
-                                <div class="dropdown-menu absolute left-full top-0 ml-1 w-60 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 transition-opacity opacity-0 group-hover-year:opacity-100 group-hover-year:block hover:block">
-                                    <div class="py-1">`;
-                            yearItem.months.forEach(monthItem => {
-                                navHTML += `<a href="${monthItem.path}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">${monthItem.title}</a>`;
-                            });
-                            navHTML += `</div></div></div>`;
-                        });
-                    } else if (link.id === 7) { // AI文章
-                        AI_DROPDOWN.forEach(rangeItem => {
-                            navHTML += `<a href="${rangeItem.path}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">${rangeItem.title}</a>`;
-                        });
-                    }
-
-                    navHTML += `</div></div></div>`;
-
-                } else {
-                    // 一般連結
-                    navHTML += `<a href="${link.path}" class="text-white hover:bg-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">${link.id}. ${link.title}</a>`;
-                }
-            });
-
-            navHTML += `</div></div></div>`;
-            navbarContainer.innerHTML = navHTML;
-        }
-
-
-        /**
-         * 渲染首頁 (Home Page)
-         */
-        function renderHome() {
-            const homeContent = [
-                { title: "范揚松學經歷、證件", path: "#page1", icon: createIcon('<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-4.42 0-8 3.58-8 8h16c0-4.42-3.58-8-8-8z"/>') },
-                { title: "范范詩友詩書創作", path: "#page2", icon: createIcon('<path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM4 12h12M10 4v12"/>') },
-                { title: "藏頭詩創作及評論", path: "#page3", icon: createIcon('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 13h6"/><path d="M9 17h6"/>') },
-                { title: "一般文章、序文", path: "#page4", icon: createIcon('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="16" y2="18"/><line x1="8" y1="14" x2="12" y2="14"/>') },
-                { title: "瑞士歐大辦學文集", path: "#page5", icon: createIcon('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><rect x="10" y="7" width="6" height="6" rx="1" ry="1"/>') },
-                { title: "陶朱公書稿彙編", path: "#page6", icon: createIcon('<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM9.5 9.5a.5.5 0 1 1 .5.5.5.5 0 0 1-.5-.5zM14 14.5a.5.5 0 1 1 .5.5.5.5 0 0 1-.5-.5z"/><path d="M10.5 10.5L13.5 13.5"/>') },
-                { title: "AI生成協作文章", path: "#page7", icon: createIcon('<path d="M12 22a4 4 0 0 0 4-4 4 4 0 0 0-4-4 4 4 0 0 0-4 4 4 4 0 0 0 4 4z"/><path d="M12 14v8"/><path d="M16 18H8"/><path d="M20 12h-8M12 4v8M4 12h8"/>') },
-                { title: "授課簡報資料檔", path: "#page8", icon: createIcon('<rect x="3" y="5" width="18" height="14" rx="2" ry="2"/><path d="M7 10h10M7 14h6"/>') },
-                { title: "視頻影片彙編", path: "#page9", icon: createIcon('<rect x="3" y="5" width="18" height="14" rx="2" ry="2"/><polygon points="12 9 16 12 12 15 12 9"/>') },
-                { title: "照片圖檔資料庫", path: "#page10", icon: createIcon('<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>') },
-                { title: "客家政策及圖文檔", path: "#page11", icon: createIcon('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 14a2 2 0 0 1 2 2h0a2 2 0 0 1-2 2v-4"/>') },
-                { title: "關係企業協會圖文", path: "#page12", icon: createIcon('<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M12 8v8"/><path d="M8 12h8"/><path d="M17 17l-5 5-5-5"/>') }
-            ];
-
-            let html = `<h1 class="text-4xl font-extrabold text-center text-gray-800 mb-10">范揚松天地</h1>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">`;
-
-            homeContent.forEach((item, index) => {
-                html += `
-                    <a href="${item.path}" class="group bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-105 border-b-4 border-blue-500 hover:border-blue-700 block text-center space-y-3">
-                        <div class="flex justify-center items-center w-20 h-20 mx-auto bg-blue-100 rounded-full group-hover:bg-blue-600 transition duration-300">
-                            ${item.icon.replace(/currentColor/g, 'text-blue-500 group-hover:text-white')}
-                        </div>
-                        <h2 class="text-lg font-semibold text-gray-700 group-hover:text-blue-700 transition">
-                            ${index + 1}. ${item.title}
-                        </h2>
-                    </a>
-                `;
-            });
-
-            html += `</div>`;
-            return html;
-        }
-
-        /**
-         * 渲染空白內容頁
-         * @param {string} title - 頁面標題
-         */
-        function renderBlankPage(title) {
-            return `
-                <h1 class="text-3xl font-bold content-title">${title}</h1>
-                <div class="text-gray-600 p-8 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
-                    <p class="text-center text-xl font-medium">此頁面內容建設中，敬請期待。</p>
-                </div>
-            `;
-        }
-
-        // --- 藏頭詩相關內容渲染 (Page 3) ---
-
-        /**
-         * 渲染藏頭詩主頁 (對應圖四)
-         */
-        function renderPoemLandingPage() {
-            const title = "藏頭詩創作及評論";
-            let html = `<h1 class="text-3xl font-bold content-title">${title}</h1>
-                        <p class="text-lg mb-6 text-gray-700">歡迎來到藏頭詩專區，請選擇年份查看內容。</p>
-                        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 text-xl font-medium">`;
-
-            POEM_DROPDOWN.forEach(yearItem => {
-                html += `<a href="${yearItem.path}" class="text-blue-600 hover:text-blue-800 p-3 rounded-lg border-b-2 border-blue-500 transition">${yearItem.title.replace('年藏頭詩', '年')}</a>`;
-            });
-
-            html += `</div>`;
-            return html;
-        }
-
-        /**
-         * 渲染特定年份的藏頭詩頁面 (對應圖五)
-         * @param {number} year - 年份 (e.g., 2024)
-         */
-        function renderPoemYearPage(year) {
-            const title = `${year}年藏頭詩`;
-            const yearData = POEM_DROPDOWN.find(item => item.path === `#page3/${year}`);
-            if (!yearData) return `<p>找不到 ${year} 年的資料。</p>`;
-
-            let html = `<h1 class="text-3xl font-bold content-title">${title}</h1>
-                        <p class="text-lg mb-8 text-gray-700">請選擇月份查看詳細的藏頭詩創作及評論。</p>
-                        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 text-center">`;
-
-            yearData.months.forEach(monthItem => {
-                html += `<a href="${monthItem.path}" class="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition duration-200 text-blue-600 hover:text-white hover:bg-blue-500 border border-blue-300">
-                            ${monthItem.title.replace('藏頭詩', '')}
-                        </a>`;
-            });
-
-            html += `</div>`;
-            return html;
-        }
-
-        /**
-         * 渲染特定月份的藏頭詩頁面 (對應圖六 - 以 2024年01月 為例)
-         * @param {number} year - 年份
-         * @param {number} month - 月份
-         */
-        function renderPoemMonthPage(year, month) {
-            const title = `${year}年${month}月藏頭詩`;
-            let content = `<p class="text-gray-500">此為範例內容（參考圖六），其他月份內容請待新增。</p>`;
-
-            // 僅為 2024年01月 帶入圖六的模擬內容
-            if (year === 2024 && month === '01') {
-                content = `
-                    <div class="space-y-6 text-gray-700 leading-relaxed">
-                        <p class="text-xl font-semibold text-blue-700 border-b pb-2">大賀喜！越哥青鳥戲鳳再度拿到歌唱創作第一名...</p>
-                        <p>香港越哥資質小錢多才藝廣，與同學組成的戲鳳女子隊，在大丘尾尾牙宴中，配合演唱一首歌從頭唱到結尾，在十萬觀眾中獲首獎！六十七花甲猶能有此身材與嗓，令人誇讚！實屬一時時之選。</p>
-                        <p>— 祝福知情友：越來超我，鳳還駕馭</p>
-                        <p>憂鬱版歌曲作曲者，波麗露開始卸妝紅；起風掃過披薩綠杉，撥動彩霞露正臉盆！</p>
-                        <p>讓油畫流水線，灑滿風流映千江；青松白桃回頭笑，豔照蝶影舞形斜條！</p>
-                        <p>（2024/01/23越動此藏頭詩獲得清步首歌曲，自願自費唱錄配合舞拍，轉製為告急公益演出，對社區社會服務來一次大愛歌頌，當然核對成份也是指著演唱此歌馬舞！增添無窮的趣味！）</p>
-                        <p>連結：<a href="#" class="text-blue-500 hover:text-blue-700 break-words">https://www.facebook.com/share/p/BnZErbEHBM4WG2G5/?mibextid=xfQFzl</a></p>
-
-                        <p class="text-xl font-semibold text-blue-700 border-b pb-2">仲學之光！誰能不向律師洪傳師律師洪傳...致敬</p>
-                        <p>寶麗版波麗秀麗周紅長老莊安以明先生方式越辦越好民進黨分區立委候選人陳俊銘律師/會計師，競選總部成立！從事資產生命鬥士張平臺之友致敬的越哥是個任勞任怨的學者，台大法律系、哈佛博士，曾任職法學博士、士官學校助理教授，他用完全誠意來協助...</p>
-                        <p>— 致謝知情友：陳援不勝，銘謝封刀</p>
-                        <p>我去找新賢寶樹、渾厚豪邁師超越；不怕連鎖火蛇、堅強意志奔得太速！</p>
-                        <p>成套舌頭硬硬質、渾厚雙修強風麗；射刀錦鯉刺斜人，陣軍為妳射好大獸！</p>
-                        <p>（2024/01/26越哥學弟陳俊銘律師會計師等友人拜訪時，陳律師將40年前每週歌載取出，抬著一園台大法學博士/律師/會計師兒子，令友人感動！吳氏連體格叫他陳老實往前，讓他真正成為立委，為諮詢立法院做些事，發揮發光發熱精神）</p>
-                        <p>（波麗秀）吳均吳律師陳俊銘是名古學專科！他感「越戰越盛，因火災致敬」</p>
-                        <p>連結：<a href="#" class="text-blue-500 hover:text-blue-700 break-words">https://ynews.page.link/yfeccr</a></p>
-                        <p>連結：<a href="#" class="text-blue-500 hover:text-blue-700 break-words">https://www.businesstoday.com.tw/article/category/183027/post/202401240018/</a></p>
-                    </div>
-                `;
-            }
-
-            return `
-                <h1 class="text-3xl font-bold content-title">${title}</h1>
-                ${content}
-            `;
-        }
-
-        // --- AI 文章相關內容渲染 (Page 7) ---
-
-        /**
-         * 渲染 AI 文章主頁 (對應圖八)
-         */
-        function renderAILandingPage() {
-            const title = "AI生成協作文章";
-            let html = `<h1 class="text-3xl font-bold content-title">${title}</h1>
-                        <p class="text-lg mb-6 text-gray-700">此區收錄 AI 協作生成的文章，請依區間選擇閱讀。</p>
-                        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 text-xl font-medium justify-center">`;
-
-            // 這裡順序與下拉選單相反 (圖八從左到右是 1-100, 101-200, 201-300)
-            const displayOrder = ["1~100問", "101~200問", "201~300問"];
-            
-            displayOrder.forEach(rangeTitle => {
-                const item = AI_DROPDOWN.find(i => i.title === rangeTitle);
-                if (item) {
-                    html += `<a href="${item.path}" class="text-blue-600 hover:text-blue-800 p-3 rounded-lg border-b-2 border-blue-500 transition">${item.title}</a>`;
-                }
-            });
-
-            html += `</div>`;
-            return html;
-        }
-
-        /**
-         * 渲染 AI 文章特定區間頁面 (對應圖九 - 以 1~100問 為例)
-         * @param {string} range - 區間 (e.g., '1-100')
-         */
-        function renderAIRangePage(range) {
-            const title = `${range.replace('-', '~')}問`;
-            let content = `<p class="text-gray-500">此為範例內容（參考圖九），其他區間內容請待新增。</p>`;
-
-            // 僅為 1~100問 帶入圖九的模擬內容
-            if (range === '1-100') {
-                content = `
-                    <p class="text-gray-500 mb-6">請點擊以下連結閱讀詳細問答：</p>
-                    <div class="space-y-4 text-gray-800">
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>40. 問 Chat：</strong> 千錘百鍊，范揚松輔弼生涯經驗的歸納總結成個案手法，綱要目錄，條理分明
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>39. 問 Chat：</strong> 范揚松在瑞士歐大、國立陽明大學授《知識管理與創新實務》，有勞 Chat 為我分析與評價
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>38. 問 Chat：</strong> 請依不同層次、角度加以分析、評價及推介范揚松為方廣白所在的藏頭詩！
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>37. 問 Chat：</strong> 范揚松弘思思考：外商事業變革是否會規劃出內容治理一案ESG及SDGs觀點分析重點論
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>36. 問 Chat：</strong> 范揚松細品《中庸》的歸真自在（時中），即動態競爭中維持系統均衡，可應用在企業經營
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>35. 問 Chat：</strong> 范揚松創新大破譯！范揚松總結其一門MBA課：持續創新降服十八掌
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>34. 問 Chat：</strong> 解加密藏頭詩七步驟！范揚松累積數千首詩作心得法，提煉出《創作藏頭詩七步驟》
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>33. 問 Chat：</strong> 創作藏頭詩4000多首，第一次被評論分析得知如此犀利有料！Chat真是慧眼識英雄
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>32. 問 Chat：</strong> 難道如吾貴人啊！眼識上禮讓范揚松自拍照破譯這個人誰能！分析與判斷，神準啊！
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>30. 問 Chat：</strong> 破譯策略管理如何做？大學、碩士受教可透過老教授教授策略個案教學精彩，受益極多！
-                        </a>
-                        <a href="#" class="block p-3 bg-white shadow-sm rounded-lg hover:bg-gray-100 transition border-l-4 border-blue-500">
-                            <strong>27. 問 Chat：</strong> 活活學學導：就法術師學三角角度解析川普兩項專長組成及其成敗... Chat分析得極深刻！
-                        </a>
-                        <!-- ... 這裡僅列出部分模擬內容 -->
-                    </div>
-                    <p class="mt-8 text-center text-sm text-gray-500">（圖九的內容已整合於此，其他連結點擊後將顯示為空白）</p>
-                `;
-            }
-
-            return `
-                <h1 class="text-3xl font-bold content-title">${title}</h1>
-                ${content}
-            `;
-        }
-
-        /**
-         * 主路由函式：根據 URL hash 渲染頁面內容
-         * @param {string} path - URL hash (e.g., #home, #page3/2024/01)
-         */
-        function renderPage(path) {
-            // 清理 hash，移除 # 符號
-            const cleanPath = path.substring(1).split('?')[0]; 
-            const pathSegments = cleanPath.split('/').filter(s => s.length > 0);
-            
-            // 預設為首頁
-            if (cleanPath === '' || cleanPath === 'home' || cleanPath === '#') {
-                contentArea.innerHTML = renderHome();
-                document.title = "范揚松天地 - 網站首頁";
-                return;
-            }
-
-            // 判斷主頁面
-            switch (pathSegments[0]) {
-                case 'page1':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[1].title);
-                    document.title = NAV_LINKS[1].title;
-                    break;
-                case 'page2':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[2].title);
-                    document.title = NAV_LINKS[2].title;
-                    break;
-                
-                // 藏頭詩專區 (Page 3)
-                case 'page3':
-                    if (pathSegments.length === 1) { // #page3
-                        contentArea.innerHTML = renderPoemLandingPage();
-                        document.title = NAV_LINKS[3].title;
-                    } else if (pathSegments.length === 2) { // #page3/YYYY (e.g., #page3/2024) - 對應圖五
-                        const year = parseInt(pathSegments[1]);
-                        contentArea.innerHTML = renderPoemYearPage(year);
-                        document.title = `${year}年藏頭詩`;
-                    } else if (pathSegments.length === 3) { // #page3/YYYY/MM (e.g., #page3/2024/01) - 對應圖六
-                        const year = parseInt(pathSegments[1]);
-                        const month = pathSegments[2];
-                        contentArea.innerHTML = renderPoemMonthPage(year, month);
-                        document.title = `${year}年${month}月藏頭詩`;
-                    }
-                    break;
-                
-                case 'page4':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[4].title);
-                    document.title = NAV_LINKS[4].title;
-                    break;
-                case 'page5':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[5].title);
-                    document.title = NAV_LINKS[5].title;
-                    break;
-                case 'page6':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[6].title);
-                    document.title = NAV_LINKS[6].title;
-                    break;
-                
-                // AI文章專區 (Page 7)
-                case 'page7':
-                    if (pathSegments.length === 1) { // #page7 - 對應圖八
-                        contentArea.innerHTML = renderAILandingPage();
-                        document.title = NAV_LINKS[7].title;
-                    } else if (pathSegments.length === 2) { // #page7/range (e.g., #page7/1-100) - 對應圖九
-                        const range = pathSegments[1];
-                        contentArea.innerHTML = renderAIRangePage(range);
-                        document.title = `${range.replace('-', '~')}問`;
-                    }
-                    break;
-
-                case 'page8':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[8].title);
-                    document.title = NAV_LINKS[8].title;
-                    break;
-                case 'page9':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[9].title);
-                    document.title = NAV_LINKS[9].title;
-                    break;
-                case 'page10':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[10].title);
-                    document.title = NAV_LINKS[10].title;
-                    break;
-                case 'page11':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[11].title);
-                    document.title = NAV_LINKS[11].title;
-                    break;
-                case 'page12':
-                    contentArea.innerHTML = renderBlankPage(NAV_LINKS[12].title);
-                    document.title = NAV_LINKS[12].title;
-                    break;
-                default:
-                    // 404 頁面或導回首頁
-                    window.location.hash = '#home';
-                    break;
-            }
-            window.scrollTo(0, 0); // 切換頁面後滾動到頂部
-        }
-
-        // --- 初始化與事件監聽 ---
-
-        // 監聽 URL hash 變化
-        window.onhashchange = () => {
-            renderPage(window.location.hash);
-        };
-
-        // 頁面初次載入
         document.addEventListener('DOMContentLoaded', () => {
-            renderNavbar(); // 渲染導覽列
-            // 首次載入時檢查 hash，如果沒有則導向 #home
-            const initialHash = window.location.hash || '#home';
-            renderPage(initialHash);
-
-            // 處理手機版導覽列的切換 (這裡沒有實作手機選單按鈕，但在實際佈署中應加入)
-            // 這裡專注於桌面版導覽列的邏輯。
+            const menuButton = document.getElementById('menu-toggle-button');
+            const navMenu = document.getElementById('nav-menu');
+            const mainContent = document.getElementById('main-content'); // 取得主要內容區塊
             
-            // 增加對下拉選單的 hover/click 處理，確保在觸摸設備上也能運作
-            const dropdowns = document.querySelectorAll('.group');
-            dropdowns.forEach(dropdown => {
-                const trigger = dropdown.querySelector('a');
-                const menu = dropdown.querySelector('.dropdown-menu');
-                
-                if (trigger && menu) {
-                    // 啟用 hover 效果
-                    dropdown.addEventListener('mouseenter', () => {
-                        menu.style.display = 'block';
-                        setTimeout(() => menu.style.opacity = '1', 10);
-                    });
-                    dropdown.addEventListener('mouseleave', () => {
-                        menu.style.opacity = '0';
-                        setTimeout(() => menu.style.display = 'none', 300);
-                    });
+            // 儲存首頁原始內容，以便點擊「首頁」時恢復
+            const homeContent = mainContent.innerHTML;
+
+            // ---------------------------------------------------------
+            // 1. 下拉選單與手機版選單邏輯
+            // ---------------------------------------------------------
+            
+            // Mobile Menu Toggle
+            menuButton.addEventListener('click', () => {
+                const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+                menuButton.setAttribute('aria-expanded', !isExpanded);
+                navMenu.classList.toggle('max-h-screen', !isExpanded);
+            });
+
+            // Dropdown Toggle Logic
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', (event) => {
+                    event.preventDefault(); 
+                    event.stopPropagation();
                     
-                    // 點擊觸發 (針對觸控設備)
-                    trigger.addEventListener('click', (e) => {
-                        if (dropdown.classList.contains('group')) { // 判斷是否為主要下拉
-                            // 檢查是否為導覽列中的下拉父項，如果是，阻止跳轉，僅展開菜單
-                            if (menu.style.display === 'block' && menu.style.opacity === '1') {
-                                // 點第二次，關閉
-                                menu.style.opacity = '0';
-                                setTimeout(() => menu.style.display = 'none', 300);
-                            } else {
-                                // 點第一次，展開
-                                e.preventDefault();
-                                menu.style.display = 'block';
-                                setTimeout(() => menu.style.opacity = '1', 10);
+                    const dropdownContent = toggle.nextElementSibling;
+                    if (dropdownContent && dropdownContent.classList.contains('dropdown-content')) {
+                        const currentItemWrapper = toggle.parentElement; 
+                        const parentContainer = currentItemWrapper.parentElement; 
+
+                        Array.from(parentContainer.children).forEach(sibling => {
+                            const siblingContent = sibling.querySelector('.dropdown-content');
+                            if (siblingContent && siblingContent !== dropdownContent) {
+                                siblingContent.classList.add('hidden');
                             }
-                        }
-                    });
+                        });
+                        dropdownContent.classList.toggle('hidden');
+                    }
+                });
+            });
 
-                    // 處理二級選單 (年 -> 月)
-                    // 修正: 將選擇器從 .group\/year 改為 .group-year
-                    const yearDropdowns = dropdown.querySelectorAll('.group-year');
-                    yearDropdowns.forEach(yearDropdown => {
-                        const yearTrigger = yearDropdown.querySelector('a');
-                        const monthMenu = yearDropdown.querySelector('.dropdown-menu');
+            // Generate Monthly Links
+            const generateMonthlyLinks = (year) => {
+                let html = '';
+                const yearPrefix = year === 2023 ? '23' : year === 2024 ? '24' : '25'; 
+                for (let month = 1; month <= 12; month++) {
+                    const monthStr = month.toString().padStart(2, '0');
+                    const filePath = `page03_${yearPrefix}_${monthStr}.html`;
+                    // 注意：這裡加上 spa-link 類別，方便後續選取
+                    html += `<a href="${filePath}" class="dropdown-link spa-link pl-8 md:pl-4">${year}年${monthStr}月藏頭詩</a>`;
+                }
+                return html;
+            };
 
-                        if(yearTrigger && monthMenu) {
-                             yearDropdown.addEventListener('mouseenter', () => {
-                                monthMenu.style.display = 'block';
-                                setTimeout(() => monthMenu.style.opacity = '1', 10);
-                            });
-                            yearDropdown.addEventListener('mouseleave', () => {
-                                monthMenu.style.opacity = '0';
-                                setTimeout(() => monthMenu.style.display = 'none', 300);
-                            });
-                        }
+            document.getElementById('monthly-links-2023').innerHTML = generateMonthlyLinks(2023);
+            document.getElementById('monthly-links-2024').innerHTML = generateMonthlyLinks(2024);
+            document.getElementById('monthly-links-2025').innerHTML = generateMonthlyLinks(2025);
+            
+            // Click Outside to Close Menu
+            document.addEventListener('click', (e) => {
+                const isInsideDropdownWrapper = e.target.closest('.dropdown-wrapper');
+                if (!isInsideDropdownWrapper) {
+                    document.querySelectorAll('.dropdown-content').forEach(content => {
+                        content.classList.add('hidden');
                     });
+                }
+            });
+
+            // ---------------------------------------------------------
+            // 2. SPA 內容載入邏輯 (核心部分)
+            // ---------------------------------------------------------
+
+            // 定義載入頁面的函數
+            async function loadPageContent(url) {
+                // 如果是首頁，恢復原始內容
+                if (url === 'index.html' || url === './index.html' || url.endsWith('index.html')) {
+                    mainContent.innerHTML = homeContent;
+                    window.scrollTo(0, 0);
+                    return;
+                }
+
+                try {
+                    // 顯示載入中狀態
+                    mainContent.innerHTML = '<div class="text-center py-20"><p class="text-xl text-gray-500">正在載入內容...</p></div>';
+
+                    // 使用 fetch 抓取目標 HTML 檔案
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const htmlText = await response.text();
+
+                    // 使用 DOMParser 解析抓取到的 HTML 字串
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlText, 'text/html');
+
+                    // 提取目標頁面中的 <main> 內容
+                    // 我們假設目標頁面也有一個 <main> 標籤
+                    const newContent = doc.querySelector('main') ? doc.querySelector('main').innerHTML : null;
+
+                    if (newContent) {
+                        mainContent.innerHTML = newContent;
+                        window.scrollTo(0, 0);
+                    } else {
+                        // 如果目標頁面沒有 main 標籤，嘗試直接顯示 body 內容 (作為 fallback)
+                        mainContent.innerHTML = doc.body.innerHTML;
+                    }
+
+                } catch (error) {
+                    console.error('載入頁面失敗:', error);
+                    mainContent.innerHTML = `
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-auto max-w-lg mt-10" role="alert">
+                            <strong class="font-bold">載入失敗！</strong>
+                            <span class="block sm:inline">無法載入頁面 "${url}"。<br><br>
+                            常見原因：<br>
+                            1. 檔案不存在。<br>
+                            2. <strong>CORS 錯誤</strong>：您可能直接雙擊了 index.html (file://)。請改用 Live Server 或將檔案上傳至網站伺服器瀏覽。</span>
+                        </div>
+                    `;
+                }
+            }
+
+            // 為所有導航連結綁定點擊事件 (使用事件委派，包含動態生成的連結)
+            // 監聽 document 的 click，判斷是否為我們的連結
+            document.addEventListener('click', (e) => {
+                const link = e.target.closest('a');
+                if (!link) return;
+
+                // 檢查是否為 menu-link 或 dropdown-link，且不是 dropdown-toggle (開關)
+                if ((link.classList.contains('menu-link') || link.classList.contains('dropdown-link')) && !link.classList.contains('dropdown-toggle')) {
+                    
+                    const href = link.getAttribute('href');
+                    if (href && href !== '#') {
+                        e.preventDefault(); // 阻止瀏覽器預設跳轉
+                        
+                        // 關閉手機版選單 (如果有打開)
+                        navMenu.classList.remove('max-h-screen');
+                        document.getElementById('menu-toggle-button').setAttribute('aria-expanded', 'false');
+                        // 關閉所有下拉選單
+                        document.querySelectorAll('.dropdown-content').forEach(c => c.classList.add('hidden'));
+
+                        // 執行載入
+                        loadPageContent(href);
+                    }
                 }
             });
         });
     </script>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header 藍底、白字，包含導航選單 -->
+    <header class="bg-primary-blue shadow-md sticky top-0 z-10">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- 網站標題/Logo -->
+                <div class="flex-shrink-0 text-2xl font-bold text-white">
+                    范揚松天地
+                </div>
+
+                <!-- 漢堡選單按鈕 (僅在小螢幕顯示) -->
+                <div class="md:hidden">
+                    <button id="menu-toggle-button" class="text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white"
+                            aria-expanded="false" aria-controls="nav-menu">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- 導航選單 (桌面預設顯示，行動裝置收合) -->
+                <div id="nav-menu" class="absolute md:static top-16 left-0 right-0 md:flex md:items-center md:space-x-1 transition-all duration-300 ease-in-out bg-primary-blue w-full md:w-auto">
+                    
+                    <!-- 選單列表 -->
+                    <div class="flex flex-col md:flex-row md:space-x-1 p-2 md:p-0">
+                        
+                        <!-- 1. 首頁 -->
+                        <a href="index.html" class="menu-link text-white">首頁</a>
+                        
+                        <!-- 2. 范揚松學經歷、證件 -->
+                        <a href="page01.html" class="menu-link text-white">范揚松學經歷、證件</a>
+                        
+                        <!-- 3. 范范詩友詩書創作 -->
+                        <a href="page02.html" class="menu-link text-white">范范詩友詩書創作</a>
+                        
+                        <!-- 4. 藏頭詩創作及評論 (三層下拉式選單) -->
+                        <div class="relative dropdown-wrapper"> 
+                            <!-- 第一層：按鈕 -->
+                            <button class="menu-link text-white dropdown-toggle flex items-center w-full md:w-auto justify-between md:justify-start">
+                                藏頭詩創作及評論
+                                <svg class="ml-1 h-4 w-4 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </button>
+                            
+                            <!-- 第二層：年份選單 -->
+                            <div class="dropdown-content hidden md:absolute z-20 w-full md:w-56 shadow-none md:shadow-lg bg-blue-800 md:bg-primary-blue rounded-md py-1 mt-0 md:mt-2 transition-all duration-300">
+                                
+                                <!-- 2023年藏頭詩 -->
+                                <div class="relative dropdown-wrapper">
+                                    <button class="dropdown-link dropdown-toggle flex justify-between items-center w-full pl-6 md:pl-4">
+                                        2023年藏頭詩
+                                        <svg class="ml-2 h-4 w-4 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                    <!-- 第三層：月份選單 -->
+                                    <div id="monthly-links-2023" class="dropdown-content absolute hidden md:absolute left-0 md:left-full top-full md:top-0 z-30 w-full md:w-56 shadow-none md:shadow-xl bg-blue-900 md:bg-blue-800 rounded-md py-1 mt-0 relative md:absolute">
+                                        <!-- JS 生成內容 -->
+                                    </div>
+                                </div>
+
+                                <!-- 2024年藏頭詩 -->
+                                <div class="relative dropdown-wrapper">
+                                    <button class="dropdown-link dropdown-toggle flex justify-between items-center w-full pl-6 md:pl-4">
+                                        2024年藏頭詩
+                                        <svg class="ml-2 h-4 w-4 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                    <div id="monthly-links-2024" class="dropdown-content hidden relative md:absolute left-0 md:left-full top-0 z-30 w-full md:w-56 shadow-none md:shadow-xl bg-blue-900 md:bg-blue-800 rounded-md py-1 mt-0">
+                                        <!-- JS 生成內容 -->
+                                    </div>
+                                </div>
+
+                                <!-- 2025年藏頭詩 -->
+                                <div class="relative dropdown-wrapper">
+                                    <button class="dropdown-link dropdown-toggle flex justify-between items-center w-full pl-6 md:pl-4">
+                                        2025年藏頭詩
+                                        <svg class="ml-2 h-4 w-4 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                    <div id="monthly-links-2025" class="dropdown-content hidden relative md:absolute left-0 md:left-full top-0 z-30 w-full md:w-56 shadow-none md:shadow-xl bg-blue-900 md:bg-blue-800 rounded-md py-1 mt-0">
+                                        <!-- JS 生成內容 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. 一般文章、序文 -->
+                        <a href="page04.html" class="menu-link text-white">一般文章、序文</a>
+                        
+                        <!-- 6. 瑞士歐大辦學文集 -->
+                        <a href="page05.html" class="menu-link text-white">瑞士歐大辦學文集</a>
+                        
+                        <!-- 7. 陶朱公書稿彙編 -->
+                        <a href="page06.html" class="menu-link text-white">陶朱公書稿彙編</a>
+                        
+                        <!-- 8. AI生成協作文章 -->
+                        <a href="page07.html" class="menu-link text-white">AI生成協作文章</a>
+                        
+                        <!-- 9. 授課簡報資料檔 -->
+                        <a href="page08.html" class="menu-link text-white">授課簡報資料檔</a>
+                        
+                        <!-- 10. 視頻影片彙編 -->
+                        <a href="page09.html" class="menu-link text-white">視頻影片彙編</a>
+                        
+                        <!-- 11. 照片圖檔資料庫 -->
+                        <a href="page10.html" class="menu-link text-white">照片圖檔資料庫</a>
+                        
+                        <!-- 12. 客家政策及圖文檔 -->
+                        <a href="page11.html" class="menu-link text-white">客家政策及圖文檔</a>
+                        
+                        <!-- 13. 關係企業協會圖文 -->
+                        <a href="page12.html" class="menu-link text-white">關係企業協會圖文</a>
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 主體內容區塊 -->
+    <!-- ID="main-content" 是 JavaScript 替換內容的目標 -->
+    <main id="main-content" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">歡迎來到范揚松天地</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <p class="mb-4">
+                這是網站的首頁內容區塊。
+            </p>
+            <p class="text-gray-600">
+                **功能說明：** 本網站目前採用 SPA (單頁應用程式) 模式運作。
+                當您點擊上方選單（例如「范揚松學經歷、證件」）時，頁面不會重新整理，而是動態載入內容並替換下方的區塊。
+            </p>
+            <p class="mt-4 p-4 bg-yellow-100 text-yellow-800 rounded border border-yellow-300 text-sm">
+                <strong>測試注意事項：</strong><br>
+                由於使用了 <code>fetch()</code> 技術來載入外部頁面，您必須透過 <strong>Web Server</strong> (例如 VS Code 的 Live Server) 來瀏覽此網頁。<br>
+                直接雙擊 HTML 檔案 (網址為 <code>file://...</code>) 將會導致安全性錯誤，無法載入內容。
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer 頁尾 -->
+    <footer class="bg-gray-800 text-white mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-sm text-center md:text-left">
+            <!-- 頁尾文字 -->
+            <div class="space-y-1">
+                <p class="font-bold">聯絡方式</p>
+                <p>地址：台北市文山區汀州路四段85巷3號B1 (師大分部旁)</p>
+                <p>服務專線：02-2935-3999</p>
+                <p>E-mail：greatmanfan@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>

@@ -1,369 +1,53 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>范揚松天地 - 首頁</title>
-    <!-- 載入 Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* 設置基本字體和背景 */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f7f7;
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        /* 選單項目的基本樣式 */
-        .menu-link {
-            display: block;
-            padding: 0.75rem 1rem;
-            white-space: nowrap; 
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-        .menu-link:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .dropdown-link {
-            display: block;
-            padding: 0.5rem 1rem;
-            white-space: nowrap;
-            background-color: #1e3a8a;
-            color: white;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-        .dropdown-link:hover {
-            background-color: #1e40af;
-        }
-        /* 用於在小螢幕上隱藏導航欄 */
-        #nav-menu {
-            transition: max-height 0.3s ease-out;
-            overflow: hidden; 
-            max-height: 0;
-        }
-        @media (min-width: 768px) {
-            #nav-menu {
-                max-height: none !important; 
-                overflow: visible !important; 
-            }
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary-blue': '#1d4ed8',
-                    },
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuButton = document.getElementById('menu-toggle-button');
-            const navMenu = document.getElementById('nav-menu');
-            const mainContent = document.getElementById('main-content'); // 取得主要內容區塊
-            
-            // 儲存首頁原始內容，以便點擊「首頁」時恢復
-            const homeContent = mainContent.innerHTML;
-
-            // ---------------------------------------------------------
-            // 1. 下拉選單與手機版選單邏輯
-            // ---------------------------------------------------------
-            
-            // Mobile Menu Toggle
-            menuButton.addEventListener('click', () => {
-                const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
-                menuButton.setAttribute('aria-expanded', !isExpanded);
-                navMenu.classList.toggle('max-h-screen', !isExpanded);
-            });
-
-            // Dropdown Toggle Logic
-            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-            dropdownToggles.forEach(toggle => {
-                toggle.addEventListener('click', (event) => {
-                    event.preventDefault(); 
-                    event.stopPropagation();
-                    
-                    const dropdownContent = toggle.nextElementSibling;
-                    if (dropdownContent && dropdownContent.classList.contains('dropdown-content')) {
-                        const currentItemWrapper = toggle.parentElement; 
-                        const parentContainer = currentItemWrapper.parentElement; 
-
-                        Array.from(parentContainer.children).forEach(sibling => {
-                            const siblingContent = sibling.querySelector('.dropdown-content');
-                            if (siblingContent && siblingContent !== dropdownContent) {
-                                siblingContent.classList.add('hidden');
-                            }
-                        });
-                        dropdownContent.classList.toggle('hidden');
-                    }
-                });
-            });
-
-            // Generate Monthly Links
-            const generateMonthlyLinks = (year) => {
-                let html = '';
-                const yearPrefix = year === 2023 ? '23' : year === 2024 ? '24' : '25'; 
-                for (let month = 1; month <= 12; month++) {
-                    const monthStr = month.toString().padStart(2, '0');
-                    const filePath = `page03_${yearPrefix}_${monthStr}.html`;
-                    // 注意：這裡加上 spa-link 類別，方便後續選取
-                    html += `<a href="${filePath}" class="dropdown-link spa-link pl-8 md:pl-4">${year}年${monthStr}月藏頭詩</a>`;
-                }
-                return html;
-            };
-
-            document.getElementById('monthly-links-2023').innerHTML = generateMonthlyLinks(2023);
-            document.getElementById('monthly-links-2024').innerHTML = generateMonthlyLinks(2024);
-            document.getElementById('monthly-links-2025').innerHTML = generateMonthlyLinks(2025);
-            
-            // Click Outside to Close Menu
-            document.addEventListener('click', (e) => {
-                const isInsideDropdownWrapper = e.target.closest('.dropdown-wrapper');
-                if (!isInsideDropdownWrapper) {
-                    document.querySelectorAll('.dropdown-content').forEach(content => {
-                        content.classList.add('hidden');
-                    });
-                }
-            });
-
-            // ---------------------------------------------------------
-            // 2. SPA 內容載入邏輯 (核心部分)
-            // ---------------------------------------------------------
-
-            // 定義載入頁面的函數
-            async function loadPageContent(url) {
-                // 如果是首頁，恢復原始內容
-                if (url === 'index.html' || url === './index.html' || url.endsWith('index.html')) {
-                    mainContent.innerHTML = homeContent;
-                    window.scrollTo(0, 0);
-                    return;
-                }
-
-                try {
-                    // 顯示載入中狀態
-                    mainContent.innerHTML = '<div class="text-center py-20"><p class="text-xl text-gray-500">正在載入內容...</p></div>';
-
-                    // 使用 fetch 抓取目標 HTML 檔案
-                    // **修改處**：加入 { cache: 'no-store' } 選項，強制瀏覽器不使用快取，直接向伺服器請求最新檔案
-                    const response = await fetch(url, { cache: 'no-store' });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const htmlText = await response.text();
-
-                    // 使用 DOMParser 解析抓取到的 HTML 字串
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlText, 'text/html');
-
-                    // 提取目標頁面中的 <main> 內容
-                    // 我們假設目標頁面也有一個 <main> 標籤
-                    const newContent = doc.querySelector('main') ? doc.querySelector('main').innerHTML : null;
-
-                    if (newContent) {
-                        mainContent.innerHTML = newContent;
-                        window.scrollTo(0, 0);
-                    } else {
-                        // 如果目標頁面沒有 main 標籤，嘗試直接顯示 body 內容 (作為 fallback)
-                        mainContent.innerHTML = doc.body.innerHTML;
-                    }
-
-                } catch (error) {
-                    console.error('載入頁面失敗:', error);
-                    mainContent.innerHTML = `
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-auto max-w-lg mt-10" role="alert">
-                            <strong class="font-bold">載入失敗！</strong>
-                            <span class="block sm:inline">無法載入頁面 "${url}"。<br><br>
-                            常見原因：<br>
-                            1. 檔案不存在。<br>
-                            2. <strong>CORS 錯誤</strong>：您可能直接雙擊了 index.html (file://)。請改用 Live Server 或將檔案上傳至網站伺服器瀏覽。</span>
-                        </div>
-                    `;
-                }
-            }
-
-            // 為所有導航連結綁定點擊事件 (使用事件委派，包含動態生成的連結)
-            // 監聽 document 的 click，判斷是否為我們的連結
-            document.addEventListener('click', (e) => {
-                const link = e.target.closest('a');
-                if (!link) return;
-
-                // 檢查是否為 menu-link 或 dropdown-link，且不是 dropdown-toggle (開關)
-                if ((link.classList.contains('menu-link') || link.classList.contains('dropdown-link')) && !link.classList.contains('dropdown-toggle')) {
-                    
-                    const href = link.getAttribute('href');
-                    if (href && href !== '#') {
-                        e.preventDefault(); // 阻止瀏覽器預設跳轉
-                        
-                        // 關閉手機版選單 (如果有打開)
-                        navMenu.classList.remove('max-h-screen');
-                        document.getElementById('menu-toggle-button').setAttribute('aria-expanded', 'false');
-                        // 關閉所有下拉選單
-                        document.querySelectorAll('.dropdown-content').forEach(c => c.classList.add('hidden'));
-
-                        // 執行載入
-                        loadPageContent(href);
-                    }
-                }
-            });
-        });
-    </script>
 </head>
-<body class="bg-gray-50">
-
-    <!-- Header 藍底、白字，包含導航選單 -->
-    <header class="bg-primary-blue shadow-md sticky top-0 z-10">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- 網站標題/Logo -->
-                <div class="flex-shrink-0 text-2xl font-bold text-white">
-                    范揚松天地
-                </div>
-
-                <!-- 漢堡選單按鈕 (僅在小螢幕顯示) -->
-                <div class="md:hidden">
-                    <button id="menu-toggle-button" class="text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white"
-                            aria-expanded="false" aria-controls="nav-menu">
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- 導航選單 (桌面預設顯示，行動裝置收合) -->
-                <div id="nav-menu" class="absolute md:static top-16 left-0 right-0 md:flex md:items-center md:space-x-1 transition-all duration-300 ease-in-out bg-primary-blue w-full md:w-auto">
-                    
-                    <!-- 選單列表 -->
-                    <div class="flex flex-col md:flex-row md:space-x-1 p-2 md:p-0">
-                        
-                        <!-- 1. 首頁 -->
-                        <a href="index.html" class="menu-link text-white">首頁</a>
-                        
-                        <!-- 2. 范揚松學經歷、證件 -->
-                        <a href="page01.html" class="menu-link text-white">范揚松學經歷、證件</a>
-                        
-                        <!-- 3. 范范詩友詩書創作 -->
-                        <a href="page02.html" class="menu-link text-white">范范詩友詩書創作</a>
-                        
-                        <!-- 4. 藏頭詩創作及評論 (三層下拉式選單) -->
-                        <div class="relative dropdown-wrapper"> 
-                            <!-- 第一層：按鈕 -->
-                            <button class="menu-link text-white dropdown-toggle flex items-center w-full md:w-auto justify-between md:justify-start">
-                                藏頭詩創作及評論
-                                <svg class="ml-1 h-4 w-4 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                            </button>
-                            
-                            <!-- 第二層：年份選單 -->
-                            <div class="dropdown-content hidden md:absolute z-20 w-full md:w-56 shadow-none md:shadow-lg bg-blue-800 md:bg-primary-blue rounded-md py-1 mt-0 md:mt-2 transition-all duration-300">
-                                
-                                <!-- 2023年藏頭詩 -->
-                                <div class="relative dropdown-wrapper">
-                                    <button class="dropdown-link dropdown-toggle flex justify-between items-center w-full pl-6 md:pl-4">
-                                        2023年藏頭詩
-                                        <svg class="ml-2 h-4 w-4 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
-                                    </button>
-                                    <!-- 第三層：月份選單 -->
-                                    <div id="monthly-links-2023" class="dropdown-content absolute hidden md:absolute left-0 md:left-full top-full md:top-0 z-30 w-full md:w-56 shadow-none md:shadow-xl bg-blue-900 md:bg-blue-800 rounded-md py-1 mt-0 relative md:absolute">
-                                        <!-- JS 生成內容 -->
-                                    </div>
-                                </div>
-
-                                <!-- 2024年藏頭詩 -->
-                                <div class="relative dropdown-wrapper">
-                                    <button class="dropdown-link dropdown-toggle flex justify-between items-center w-full pl-6 md:pl-4">
-                                        2024年藏頭詩
-                                        <svg class="ml-2 h-4 w-4 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
-                                    </button>
-                                    <div id="monthly-links-2024" class="dropdown-content hidden relative md:absolute left-0 md:left-full top-0 z-30 w-full md:w-56 shadow-none md:shadow-xl bg-blue-900 md:bg-blue-800 rounded-md py-1 mt-0">
-                                        <!-- JS 生成內容 -->
-                                    </div>
-                                </div>
-
-                                <!-- 2025年藏頭詩 -->
-                                <div class="relative dropdown-wrapper">
-                                    <button class="dropdown-link dropdown-toggle flex justify-between items-center w-full pl-6 md:pl-4">
-                                        2025年藏頭詩
-                                        <svg class="ml-2 h-4 w-4 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
-                                    </button>
-                                    <div id="monthly-links-2025" class="dropdown-content hidden relative md:absolute left-0 md:left-full top-0 z-30 w-full md:w-56 shadow-none md:shadow-xl bg-blue-900 md:bg-blue-800 rounded-md py-1 mt-0">
-                                        <!-- JS 生成內容 -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 5. 一般文章、序文 -->
-                        <a href="page04.html" class="menu-link text-white">一般文章、序文</a>
-                        
-                        <!-- 6. 瑞士歐大辦學文集 -->
-                        <a href="page05.html" class="menu-link text-white">瑞士歐大辦學文集</a>
-                        
-                        <!-- 7. 陶朱公書稿彙編 -->
-                        <a href="page06.html" class="menu-link text-white">陶朱公書稿彙編</a>
-                        
-                        <!-- 8. AI生成協作文章 -->
-                        <a href="page07.html" class="menu-link text-white">AI生成協作文章</a>
-                        
-                        <!-- 9. 授課簡報資料檔 -->
-                        <a href="page08.html" class="menu-link text-white">授課簡報資料檔</a>
-                        
-                        <!-- 10. 視頻影片彙編 -->
-                        <a href="page09.html" class="menu-link text-white">視頻影片彙編</a>
-                        
-                        <!-- 11. 照片圖檔資料庫 -->
-                        <a href="page10.html" class="menu-link text-white">照片圖檔資料庫</a>
-                        
-                        <!-- 12. 客家政策及圖文檔 -->
-                        <a href="page11.html" class="menu-link text-white">客家政策及圖文檔</a>
-                        
-                        <!-- 13. 關係企業協會圖文 -->
-                        <a href="page12.html" class="menu-link text-white">關係企業協會圖文</a>
-
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- 主體內容區塊 -->
-    <!-- ID="main-content" 是 JavaScript 替換內容的目標 -->
-    <main id="main-content" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">歡迎來到范揚松天地</h1>
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <p class="mb-4">
-                這是網站的首頁內容區塊。
-            </p>
-            <p class="text-gray-600">
-                **功能說明：** 本網站目前採用 SPA (單頁應用程式) 模式運作。
-                當您點擊上方選單（例如「范揚松學經歷、證件」）時，頁面不會重新整理，而是動態載入內容並替換下方的區塊。
-            </p>
-            <p class="mt-4 p-4 bg-yellow-100 text-yellow-800 rounded border border-yellow-300 text-sm">
-                <strong>測試注意事項：</strong><br>
-                由於使用了 <code>fetch()</code> 技術來載入外部頁面，您必須透過 <strong>Web Server</strong> (例如 VS Code 的 Live Server) 來瀏覽此網頁。<br>
-                直接雙擊 HTML 檔案 (網址為 <code>file://...</code>) 將會導致安全性錯誤，無法載入內容。
-            </p>
-        </div>
-    </main>
-
-    <!-- Footer 頁尾 -->
-    <footer class="bg-gray-800 text-white mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-sm text-center md:text-left">
-            <!-- 頁尾文字 -->
-            <div class="space-y-1">
-                <p class="font-bold">聯絡方式</p>
-                <p>地址：台北市文山區汀州路四段85巷3號B1 (師大分部旁)</p>
-                <p>服務專線：02-2935-3999</p>
-                <p>E-mail：greatmanfan@gmail.com</p>
-            </div>
-        </div>
-    </footer>
-
+<body>
+<big><big><span style="font-weight: bold;"></span></big></big>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+cellspacing="2">
+<tbody>
+<tr>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">1.范揚松學經歷、證件</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">2.范范詩友詩書創作</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">3.藏頭詩創作及評論</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">4.一般文章、序文</span></big></big></td>
+</tr>
+<tr>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">5.瑞士歐大辦學文集</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">6.陶朱公書稿彙編</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">7.AI生成協作文章</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">8.授課簡報資料檔</span></big></big></td>
+</tr>
+<tr>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">9.視頻影片彙編</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">10.照片圖檔資料庫</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">11.客家政策及圖文檔</span></big></big></td>
+<td style="vertical-align: top;"><big><big><span
+style="font-weight: bold;">12.關係企業協會圖文</span></big></big></td>
+</tr>
+</tbody>
+</table>
+<big><big><span style="font-weight: bold;"><br>
+</span><br style="font-weight: bold;">
+<span style="font-weight: bold;"></span></big></big><br>
+<br>
+<br>
+<br>
+聯絡方式<br>
+地址：台北市文山區汀州路四段85巷3號B1 (師大分部旁)<br>
+服務專線：02-2935-3999<br>
+E-mail：greatmanfan@gmail.com<br>
 </body>
 </html>
+
